@@ -14,6 +14,8 @@
 // lambda we need to copy both the captured variables (used for the device
 // version) and the lambda buffer (used for the host version).
 //
+// Lambdas convertible to function pointers have no host lambda buffer.
+//
 // The main challenge is that we cannot access this buffer or its size from an
 // extended lambda object. For accessing the buffer, we assume that the pointer
 // to the buffer will be the last data member of the extended lambda, and just
@@ -52,6 +54,7 @@ std::size_t hdl_host_lambda_size(T) {
 
 // Function used to return the size of a host only lambda with the same captures
 // as an extended lambda.
+// Returns 0 if no host lambda is stored.
 // We rely on the type of nvcc's __nv_hdl_wrapper_t here, we cannot spell out
 // the type explicitly as it doesn't exist until the final host compilation
 // step.
@@ -60,18 +63,25 @@ template <template <bool, bool, bool, class, class, class...> class T,
           typename Fun, typename... Fields>
 std::size_t hdl_host_lambda_size(
     const T<IsMutable, HasFuncPtrConv, NeverThrows, Tag, Fun, Fields...>&) {
-  using lambda_size_t = decltype([]<class... Args>(Args... args) {
-    auto lambda = [=]() { ((void)args, ...); };
-    return std::integral_constant<std::size_t, sizeof(lambda)>{};
-  }((std::declval<Fields>())...));
+  if constexpr (HasFuncPtrConv) {
+    return 0;
+  } else {
+    using lambda_size_t = decltype([]<class... Args>(Args... args) {
+      auto lambda = [=]() { ((void)args, ...); };
+      return std::integral_constant<std::size_t, sizeof(lambda)>{};
+    }((std::declval<Fields>())...));
 
-  return lambda_size_t::value;
+    return lambda_size_t::value;
+  }
 }
 
 // Returns the pointer to the host lambda stored in extended lambdas.
 // We assume that it is the last member of __nv_hdl_wrapper_t.
 template <class Functor>
 void* hdl_host_lambda_pointer(Functor&& f) {
+  if (hdl_host_lambda_size(f) == 0) {
+    return nullptr;
+  }
   unsigned char* data = reinterpret_cast<unsigned char*>(&f);
   return *reinterpret_cast<void**>((data + sizeof(f)) - sizeof(void*));
 }

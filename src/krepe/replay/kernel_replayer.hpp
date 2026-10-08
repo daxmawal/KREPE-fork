@@ -601,13 +601,18 @@ Functor replay_functor(const Functor& functor) {
   [[maybe_unused]] void* inner_lambda_ptr  = nullptr;
   [[maybe_unused]] void* inner_lambda_save = nullptr;
   if constexpr (krepe::hdl_utils::lambda_is_hdl<Functor>()) {
-    impl::init_functor(static_cast<char*>(dummy_functor_storage),
-                       N - sizeof(void*));
-    inner_lambda_ptr =
-        krepe::hdl_utils::hdl_host_lambda_pointer(*dummy_functor);
-    inner_lambda_save = impl::copy_extended_lambda_inner_lambda(
-        inner_lambda_ptr,
-        krepe::hdl_utils::hdl_host_lambda_size(*dummy_functor));
+    const auto inner_lambda_size =
+        krepe::hdl_utils::hdl_host_lambda_size(*dummy_functor);
+    if (inner_lambda_size != 0) {
+      impl::init_functor(static_cast<char*>(dummy_functor_storage),
+                         N - sizeof(void*));
+      inner_lambda_ptr =
+          krepe::hdl_utils::hdl_host_lambda_pointer(*dummy_functor);
+      inner_lambda_save = impl::copy_extended_lambda_inner_lambda(
+          inner_lambda_ptr, inner_lambda_size);
+    } else {
+      impl::init_functor(static_cast<char*>(dummy_functor_storage), N);
+    }
   } else
 #endif
   {
@@ -619,8 +624,10 @@ Functor replay_functor(const Functor& functor) {
   std::free(dummy_functor_buffer_save);
 #if defined(KERNEL_REPLAYER_USE_NVCC_HDL_WORKAROUND)
   if constexpr (krepe::hdl_utils::lambda_is_hdl<Functor>()) {
-    impl::restore_extended_lambda_inner_lambda(inner_lambda_ptr,
-                                               inner_lambda_save);
+    if (inner_lambda_ptr != nullptr) {
+      impl::restore_extended_lambda_inner_lambda(inner_lambda_ptr,
+                                                 inner_lambda_save);
+    }
   }
 #endif
   dummy_functor->~Functor();

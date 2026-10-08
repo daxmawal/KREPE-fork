@@ -10,3 +10,15 @@ target_link_libraries(
 )
 
 add_replay_test(no_capture TRUE)
+
+add_executable(no_capture_function_pointer function_pointer_main.cpp)
+target_link_libraries(
+  no_capture_function_pointer PRIVATE krepe_warnings krepe_sanitizers Kokkos::kokkos kernel_extractor
+)
+
+add_executable(no_capture_function_pointer_replay function_pointer_replay_main.cpp)
+target_link_libraries(
+  no_capture_function_pointer_replay PRIVATE krepe_warnings krepe_sanitizers Kokkos::kokkos kernel_replayer_sanitized
+)
+
+add_replay_test(no_capture_function_pointer TRUE)
