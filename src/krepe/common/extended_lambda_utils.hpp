@@ -14,9 +14,9 @@
 // lambda we need to copy both the captured variables (used for the device
 // version) and the lambda buffer (used for the host version).
 //
-// Captured extended lambdas have their own host closures in both the wrapper
-// and the host closure. These pointers belong to the capturing process and
-// must be replaced during replay, so both sets of captures are visited.
+// When an extended lambda A captures another extended lambda B, we have to
+// recursively store the host buffer of B, both from the captures of A and
+// the captures of A's host closure.
 //
 // The main challenge is that we cannot access this buffer or its size through
 // the public interface of an extended lambda object. For accessing the buffer,
