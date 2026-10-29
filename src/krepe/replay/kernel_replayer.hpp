@@ -58,6 +58,11 @@ class FunctorRestore {
     void** pointer_slot;
     void* buffer;
     std::vector<std::byte> original;
+    
+    HostClosure(void** _pointer_slot, void* _buffer, std::size_t size)
+        : pointer_slot(_pointer_slot), buffer(_buffer), original(size) {
+      std::memcpy(original.data(), buffer, original.size());
+    }
   };
   std::vector<HostClosure> host_closures_;
 #endif
@@ -71,9 +76,7 @@ class FunctorRestore {
     if constexpr (hdl_utils::is_hdl<Functor>()) {
       auto save = [&](const void*, void** pointer_slot, void* buffer,
                       std::size_t size) {
-        HostClosure closure{pointer_slot, buffer, std::vector<std::byte>(size)};
-        std::memcpy(closure.original.data(), buffer, size);
-        host_closures_.push_back(std::move(closure));
+        host_closures_.emplace_back(pointer_slot, buffer, size);
       };
       hdl_utils::visit_hdl_host_lambdas(functor, save);
     }
