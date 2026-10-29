@@ -19,14 +19,12 @@
 // must be replaced during replay, so both sets of captures are visited.
 //
 // The main challenge is that we cannot access this buffer or its size through
-// a public interface of an extended lambda object. For accessing the buffer,
-// we use the data member of the wrapper struct during the host compilation
-// phase. We cannot compute its position as sizeof(lambda) - sizeof(void*)
-// because over-aligned captures can add padding after the pointer. For the
-// size, we get the types that are captured from the signature of the wrapper
-// struct and compute their layout using sizeof and alignof of each type.
-// This assumes that the wrapper and host lambda store their captures in the
-// same order and with the same alignment.
+// the public interface of an extended lambda object. For accessing the buffer,
+// we use the data member of the wrapper struct during the final host
+// compilation phase. For the size, we get the types that are captured from the
+// signature of the wrapper struct and compute their layout using sizeof and
+// alignof of each type. This assumes that the wrapper and host lambda store
+// their captures in the same order and with the same alignment.
 //
 // An alternative would have been to use a user-defined operator new, record
 // all allocated pointers and sizes, and retrieve the size of the allocation
