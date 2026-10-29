@@ -128,8 +128,8 @@ void visit_hdl_host_lambdas(const T<IsMutable, HasFuncPtrConv, NeverThrows, Tag,
       !HasFuncPtrConv,
       "NVCC lambdas with an empty capture list ([]) are not supported");
   static_assert(host_capture_size<CapturedTypes...>() <= sizeof(f));
-  // Access the member directly: over-aligned captures can add padding after
-  // this pointer, so it is not necessarily at sizeof(f) - sizeof(void*).
+  // NVCC's data member points to the host-only lambda object used when the
+  // extended lambda is called on the host.
 
   // Visit the parent before its children: restoring its host buffer also
   // replaces the bytes of the wrappers captured inside that buffer.
