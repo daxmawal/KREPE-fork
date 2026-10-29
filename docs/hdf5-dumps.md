@@ -1,14 +1,8 @@
 # HDF5 file layout
 
-Each HDF5 dump stores a kernel's execution context for replay.
-The `in/` snapshot is written before the kernel runs, and `out/` is added after
-it completes.
+Each HDF5 dump stores a kernel's execution context for replay,
+In filenames `krepe_<label>_<kernel_id>.h5`.
 
-In filenames `krepe_<label>_<kernel_id>.h5` and allocation group names
-`view_<index>_<label>`, characters other than letters, digits, `_`, `-` and `.`
-are replaced with `_`, and the label is truncated to 80 characters. Empty labels
-become `unnamed`. The `kernel_label` and `label` attributes retain the original
-kernel and allocation labels.
 
 <div class="hdf5-tree" markdown="1">
 <div class="hdf5-root"><code>/</code></div>

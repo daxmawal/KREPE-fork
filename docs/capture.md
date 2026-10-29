@@ -65,18 +65,10 @@ Alternatively, use Kokkos command-line arguments:
   --kokkos-tools-args="--krepe-dump-kernel-label=scale --krepe-dump-kernel-invocation=1"
 ```
 
-The label is required and must match the kernel name exactly. Invocation
-numbers start at 1 for each label.
-
 This generates one HDF5 file named `krepe_scale_<kernel_id>.h5`.
 See the [HDF5 file layout](hdf5-dumps.md) for
 the naming rules, file structure and stored metadata.
-
-The file is written to the current working directory. Its suffix is the tool's
-global kernel launch ID, independent of the invocation number for a label.
-
-Only the memory allocations going through Kokkos are captured (e.g. Views,
-`Kokkos::malloc`).
+The file is written to the current working directory.
 
 ### Parallel_for wrapper
 

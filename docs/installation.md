@@ -13,8 +13,6 @@ You also need:
 - HDF5 development headers and libraries, including the C and high-level
   (`HL`) components.
 
-Your Kokkos installation determines the available CPU and GPU backends.
-
 ## Build and install KREPE
 
 Clone the repo, then configure and build with CMake

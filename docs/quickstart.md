@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 ## replay.cpp
 
 The replay uses the captured data and execution policy. The second argument
-of `krepe::parallel_for` is ignored, so we pass `0`.
+of `krepe::parallel_for` is ignored, so we can pass `0`.
 
 ```cpp
 #include <Kokkos_Core.hpp>
@@ -117,8 +117,7 @@ Pass the generated dump to the replay program. Replace
 <details markdown="1">
 <summary>Verify all 1024 values (optional)</summary>
 
-To check the results, replace `replay.cpp` with this complete version.
-It uses `krepe::compare_views` to compare
+To check the results, uses `krepe::compare_views` to compare
 all 1024 values with the output recorded during capture:
 
 ```cpp
@@ -153,13 +152,6 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
-```
-
-Rebuild with `cmake --build build --parallel`, then run the same replay
-command. It checks all 1024 elements and reports:
-
-```text
-Replay verified: 1024 values match.
 ```
 
 </details>

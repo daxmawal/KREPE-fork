@@ -105,10 +105,5 @@ auto* data = static_cast<int*>(krepe::get_allocation<memory_space>("values"));
 AllocationView replayed_values(data, 1024);
 ```
 
-This snippet assumes that the allocation is present. Check the pointer for
-`nullptr` before constructing the View when the allocation may be missing.
-KREPE owns this buffer: do not free the pointer or keep the View beyond the
-lifetime of `replay_scope`.
-
 To compare the replayed data with the output recorded during capture, see
 [Result validation](validation.md).
