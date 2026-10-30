@@ -59,8 +59,8 @@ class FunctorRestore {
     void* buffer;
     std::vector<std::byte> original;
 
-    HostClosure(void** _pointer_slot, void* _buffer, std::size_t size)
-        : pointer_slot(_pointer_slot), buffer(_buffer), original(size) {
+    HostClosure(void** slot, void* host_buffer, std::size_t size)
+        : pointer_slot(slot), buffer(host_buffer), original(size) {
       std::memcpy(original.data(), buffer, original.size());
     }
   };
