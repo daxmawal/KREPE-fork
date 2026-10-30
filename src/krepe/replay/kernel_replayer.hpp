@@ -48,8 +48,9 @@ void init_extended_lambda_host_closure(void* buffer, std::size_t size,
 
 void init_functor(std::byte* buffer, std::size_t size);
 
-// Keep every temporary host closure alive at its original address while its
-// captures are patched, then restore its bytes before the functor is destroyed.
+// Save the original bytes of the temporary functor and its nested NVCC host
+// buffers. Restore them in the destructor, including if patching or copying
+// inside execute throws, so the temporary functor can be safely destroyed.
 class FunctorRestore {
   void* storage_;
   std::vector<std::byte> original_;
